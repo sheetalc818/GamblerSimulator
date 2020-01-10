@@ -1,22 +1,43 @@
 #!/bin/bash -x
 echo "==WELCOME TO GAMBLER SIMULATOR=="
+declare LOOSING_AMOUNT=0
+declare STAKE_AMOUNT=100
 
-#Declaring Constants
-declare STAKE_AMOUNT=100;
-declare BET_AMOUNT=1;
-declare STAKE_DAYS=30;
+stakeAmount=$STAKE_AMOUNT
+
+#Variables
+lowerLimit=50
+higherLimit=150
 
 #Function for betting
 function betting()
 {
-	if [ $((RANDOM%2)) -eq 1 ]
-	then
-		win=$(($STAKE_AMOUNT + 1))
-		echo $win
-	else
-		loose=$(($STAKE_AMOUNT - 1))
-		echo $loose
-	fi
+	while [ $stakeAmount -gt $LOOSING_AMOUNT ]
+	do
+		if [ $((RANDOM%2)) -eq 1 ]
+		then
+			stakeAmount=$(($stakeAmount + 1))
+		else
+			stakeAmount=$(($stakeAmount - 1 ))
+		fi
+
+		if [ $stakeAmount -ge $higherLimit ] || [ $stakeAmount -le $lowerLimit ]
+		then
+			break
+		fi
+	done
 }
-#Calling betting() function
+
+#Function to calculate Upper and Lower limit
+function calLowerAndUpperLimit()
+{
+	lowerLimit=$(($(($lowerLimit*$STAKE_AMOUNT))/100))
+	higherLimit=$(($(($higherLimit*$STAKE_AMOUNT))/100))
+}
+
+#Calling functions
+calLowerAndUpperLimit
 betting
+
+
+
