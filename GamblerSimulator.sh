@@ -1,31 +1,51 @@
 #!/bin/bash -x
 echo "==WELCOME TO GAMBLER SIMULATOR=="
+
+#Constants
 declare LOOSING_AMOUNT=0
 declare STAKE_AMOUNT=100
+declare STAKE_DAYS=20
+declare STAKE_BET=1
 
-stakeAmount=$STAKE_AMOUNT
+#Dictionary
+declare -A gamblerDictionary
 
 #Variables
 lowerLimit=50
 higherLimit=150
+totalAmount=0
 
 #Function for betting
 function betting()
 {
-	while [ $stakeAmount -gt $LOOSING_AMOUNT ]
+	for (( i=1;i<=$STAKE_DAYS;i++ ))
 	do
-		if [ $((RANDOM%2)) -eq 1 ]
-		then
-			stakeAmount=$(($stakeAmount + 1))
-		else
-			stakeAmount=$(($stakeAmount - 1 ))
-		fi
+		stakeAmount=$STAKE_AMOUNT
+		while [ $stakeAmount -gt $LOOSING_AMOUNT ]
+		do
+			if [ $((RANDOM%2)) -eq 1 ]
+			then
+				stakeAmount=$(($stakeAmount + $STAKE_BET))
+			else
+				stakeAmount=$(($stakeAmount - $STAKE_BET ))
+			fi
 
-		if [ $stakeAmount -ge $higherLimit ] || [ $stakeAmount -le $lowerLimit ]
-		then
-			break
-		fi
+			#If Won Credit 50
+			if [ $stakeAmount -gt $higherLimit ]
+      	then
+				gamblerDictionary[$i]=$(($STAKE_AMOUNT+50))
+				totalAmount=$(($totalAmount+50))
+				break
+			#If Loose Debit 50
+			elif [ $stakeAmount -lt $lowerLimit ]
+			then
+         	gamblerDictionary[$i]=$(($STAKE_AMOUNT - 50))
+				totalAmount=$(($totalAmount-50))
+      		break
+      	fi
+		done
 	done
+	echo $totalAmount
 }
 
 #Function to calculate Upper and Lower limit
@@ -37,7 +57,8 @@ function calLowerAndUpperLimit()
 
 #Calling functions
 calLowerAndUpperLimit
-betting
+betting $STAKE_DAYS 
+echo ${gamblerDictionary[@]}
 
 
 
