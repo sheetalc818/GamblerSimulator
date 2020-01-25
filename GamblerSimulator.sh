@@ -16,6 +16,9 @@ higherLimit=150
 totalAmount=0
 win=0
 loose=0
+luckiest=0
+unLuckiest=10000
+counter=0
 
 #Function for betting
 function betting()
@@ -52,6 +55,54 @@ function betting()
 	done
 }
 
+function convertingDictionarytoArray()
+{
+		for key in ${!gamblerDictionary[@]}
+		do
+			GamblerArray[((counter++))]=${gamblerDictionary[$key]}
+	   done
+		#  echo    "Computation Array is::" ${GamblerArray[@]}
+}
+
+function findingTheMaximumWonBet()
+{
+		for luckVal in ${GamblerArray[@]}
+      do
+         if [ $luckVal -gt $luckiest ]
+         then
+             luckiest=$luckVal
+         fi
+         if [ $luckVal -lt $unLuckiest ]
+         then
+             unLuckiest=$luckVal
+         fi
+		done
+}
+
+function findingLuckiestDay()
+{
+	for key in ${!gamblerDictionary[@]}
+	do
+		if [ ${gamblerDictionary[$key]} -eq  $luckiest ]
+      then
+          echo "Lucky Day-------->"$key
+          break
+      fi
+	done
+}
+
+function findingUnluckiestDay()
+{
+	for key in ${!gamblerDictionary[@]}
+	do
+		if [ ${gamblerDictionary[$key]} -eq  $unLuckiest ]
+      then
+			echo "UnLucky Day-------->"$key
+			break
+      fi
+	done
+}
+
 #Function to calculate Upper and Lower limit
 function calLowerAndUpperLimit()
 {
@@ -64,13 +115,20 @@ function WonOrLooseInMonth()
 {
 	winningPer=$(($win*100/$STAKE_DAYS));
 	loosingPer=$(($loose*100/$STAKE_DAYS));
-	echo ${gamblerDictionary[@]}
+	#echo ${gamblerDictionary[@]}
 }
 
 #Calling functions
 calLowerAndUpperLimit
 betting $STAKE_DAYS
 WonOrLooseInMonth
+convertingDictionarytoArray
+findingTheMaximumWonBet
+findingLuckiestDay
+findingUnluckiestDay
+echo ${!gamblerDictionary[@]}
+echo ${gamblerDictionary[@]}
+
 
 
 
